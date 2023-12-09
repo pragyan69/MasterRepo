@@ -468,11 +468,7 @@ const STAKING_CONTRACT_ABI = [
 		"type": "function"
 	}
 ]
-
-
 const contract = new web3.eth.Contract(STAKING_CONTRACT_ABI, STAKING_CONTRACT_ADDRESS)
-
-
 // functions
 async function sendTransaction2(methodName, args, fromAddress, privateKey) {
   // Estimate gas price and limit
