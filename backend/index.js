@@ -587,6 +587,85 @@ app.post('/submitIdea', async (req, res) => {
     }
 });
 
+// creating room and sending transaction to the blockchain 
+
+app.post('/createRoom', (req, res) => {
+    const { creator, name, description, memberlimit, validityindays } = req.body;
+  
+    // Validate the input
+    if (!creator || !name || !description || !memberlimit || !validityindays) {
+        return res.status(400).json({ error: 'All fields are required.' });
+    }
+  
+    const command = `npx hardhat createRoom --network alfajores --creator "${creator}" --name "${name}" --description "${description}" --memberlimit ${memberlimit} --validityindays ${validityindays}`;
+    
+    exec(command, { cwd: '../hardhat' }, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error}`);
+            return res.status(500).json({ error: error.message });
+        }
+        if (stderr) {
+            console.error(`Stderr: ${stderr}`);
+            return res.status(500).json({ error: stderr });
+        }
+        res.json({ message: `Room '${name}' created successfully`, output: stdout });
+    });
+  });
+
+  // to list the rooms 
+app.get('/getRooms', async (req, res) => {
+    try {
+        const rooms = await contract.methods.getRooms().call();
+  
+        // Format the rooms data
+        const formattedRooms = rooms.map(room => ({
+            name: room.name,
+            description: room.description,
+            memberLimit: room.memberLimit.toString(), // Convert to string if it's a BigInt
+            validity: new Date(parseInt(room.validity) * 1000).toISOString() // Convert to number then to ISO string
+        }));
+  
+        res.status(200).json({ rooms: formattedRooms });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+  });
+
+  // room Count , based on the roomCount variable 
+
+app.get('/getRoomCount', async (req, res) => {
+    try {
+        const roomCount = await contract.methods.roomCount().call();
+  
+        res.status(200).json({ roomCount: roomCount });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+  });
+  
+  
+  // to return all the members of a particular room 
+  app.get('/getRoomMembers/:roomId', async (req, res) => {
+    const roomId = req.params.roomId;
+  
+    // Validate that roomId is a number
+    if (isNaN(parseInt(roomId))) {
+        return res.status(400).json({ error: 'Room ID must be a valid number.' });
+    }
+  
+    try {
+        const members = await contract.methods.getRoomMembers(roomId).call();
+  
+        res.status(200).json({ roomId: roomId, members: members });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+  });
+  
+
 
 
 // the main exit function 
