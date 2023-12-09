@@ -1,21 +1,21 @@
 import React from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
 
-const RoomIdeasList = ({ ideas }) => {
+const RoomFeatures = ({ features }) => {
     // Check if 'ideas' is defined before attempting to map it
-    if (!ideas || ideas.length === 0) {
+    if (!features || features.length === 0) {
         return <div>No ideas available</div>;
     }
 
     return (
         <List>
-            {ideas.map((idea, index) => (
+            {ideas.map((features, index) => (
                 <ListItem key={index}>
-                    <ListItemText primary={idea} />
+                    <ListItemText primary={features} />
                 </ListItem>
             ))}
         </List>
     );
 };
 
-export default RoomIdeasList;
+export default RoomFeatures;

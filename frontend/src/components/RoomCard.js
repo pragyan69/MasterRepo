@@ -6,8 +6,16 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { useNavigate } from 'react-router-dom';
 
 const RoomCard = ({ room, id }) => {
+    const navigate = useNavigate();
+
+  const handleJoinRoom = () => {
+    navigate(`/room/${id}`); // Navigate to Room page with room ID
+  };
+
+
   return (
     <Card sx={{ minWidth: 275, marginBottom: 2 }}>
       <CardContent>
@@ -27,7 +35,7 @@ const RoomCard = ({ room, id }) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Join Room</Button>
+      <Button size="small" onClick={handleJoinRoom}>Join Room</Button>
       </CardActions>
     </Card>
   );

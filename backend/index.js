@@ -574,7 +574,7 @@ app.post('/submitIdea', async (req, res) => {
         }
 
 
-        const tx = await sendTransaction('submitIdea', [idea], address);
+        const tx = await sendTransaction2('submitIdea', [idea], address);
 
         res.json({ message: 'Idea submitted successfully', transaction: tx });
     } catch (error) {
@@ -696,6 +696,69 @@ app.get('/getAllMembers', async (req, res) => {
         console.error("Error:", error);
         res.status(500).json({ error: error.message });
     }
+  });
+
+  // get room ideas 
+
+  app.get('/getRoomIdeas/:roomId', async (req, res) => {
+    const roomId = req.params.roomId;
+    try {
+        const result = await contract.methods.getRoomIdeas(roomId).call();
+        res.json({ roomIdeas: result });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// post request to add the features to the room we need to addd hardhat script 
+app.post('/addRoomFeature', async (req, res) => {
+	const { userAddress, roomId, featureName, featureDescription } = req.body;
+	// Validate inputs
+	if (isNaN(parseInt(roomId))) {
+		return res.status(400).json({ error: 'Room ID must be a valid number.' });
+	}
+	try {
+		// Check if the user is a member of the room
+		const room = await contract.methods.rooms(roomId).call();
+		const isMemberOfRoom = room.members.includes(userAddress);
+		if (!isMemberOfRoom) {
+			return res.status(403).json({ error: 'User is not a member of the room.' });
+		}
+		// Retrieve the private key for sending the transaction
+		const privateKey = process.env.PRIVATE_KEY; // Replace with your secure key retrieval method
+		if (!privateKey) {
+			throw new Error('Private key not found. Make sure to set it in your environment variables.');
+		}
+		// Send transaction to add the room feature
+		const txHash = await sendTransaction2(
+			'addRoomFeature',
+			[roomId, featureName, featureDescription],
+			userAddress,
+			privateKey
+		);
+		res.status(200).json({ message: 'Room feature added successfully', transactionHash: txHash });
+	} catch (error) {
+		console.error("Error:", error);
+		res.status(500).json({ error: error.message });
+	}
+  });
+
+  app.get('/getRoomFeatures', async (req, res) => {
+	const roomId = req.query.roomId;
+	// Validate that roomId is a number
+	if (isNaN(parseInt(roomId))) {
+		return res.status(400).json({ error: 'Room ID must be a valid number.' });
+	}
+  
+	try {
+		const features = await contract.methods.getRoomFeatures(roomId).call();
+  
+		res.status(200).json({ roomId: roomId, features: features });
+	} catch (error) {
+		console.error("Error:", error);
+		res.status(500).json({ error: error.message });
+	}
   });
 
 // the main exit function 
