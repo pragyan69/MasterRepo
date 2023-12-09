@@ -555,32 +555,34 @@ app.post('/addMember', (req, res) => {
 });
 
 // this function will submit idea 
-app.post('/submitIdea', async (req, res) => {
-    const { address, idea } = req.body;
+app.post('/submitIdea', (req, res) => {
+    let { roomid, idea } = req.body;
 
-    if (!address || typeof address !== 'string') {
-        return res.status(400).json({ error: 'Address is required and must be a string.' });
+    // Validate the input
+    roomid = Number(roomid); // Convert roomid to a number
+    if (isNaN(roomid)) {
+        return res.status(400).json({ error: 'Room ID is required and must be a number.' });
     }
 
     if (!idea || typeof idea !== 'string') {
         return res.status(400).json({ error: 'Idea is required and must be a string.' });
     }
 
-    try {
-        // Check if the address is a member
-        const isMember = await stakingContract.methods.isMember(address).call();
-        if (!isMember) {
-            return res.status(403).json({ error: 'Address is not a member.' });
+    // Construct the Hardhat command
+    const command = `npx hardhat submitIdea --network alfajores --roomid ${roomid} --idea "${idea}"`;
+
+    // Execute the Hardhat command
+    exec(command, { cwd: '../hardhat' }, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error}`);
+            return res.status(500).json({ error: error.message });
         }
-
-
-        const tx = await sendTransaction2('submitIdea', [idea], address);
-
-        res.json({ message: 'Idea submitted successfully', transaction: tx });
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).send(error.toString());
-    }
+        if (stderr) {
+            console.error(`Stderr: ${stderr}`);
+            return res.status(500).json({ error: stderr });
+        }
+        res.json({ message: `Idea submitted to room ${roomid} successfully`, output: stdout });
+    });
 });
 
 // creating room and sending transaction to the blockchain 
