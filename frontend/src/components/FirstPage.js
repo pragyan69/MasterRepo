@@ -1,31 +1,48 @@
-import React from 'react'
+// FirstPage.js
+import React, { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import axios from 'axios';
+import CreateRoomForm from './CreateRoomForm';
+import RoomCard from './RoomCard';
 
 const FirstPage = () => {
+    const [showForm, setShowForm] = useState(false);
+    const [showRooms, setShowRooms] = useState(false);
+    const [rooms, setRooms] = useState([]);
+
+    const handleSuccess = (data) => {
+        console.log('Room created successfully:', data);
+        setShowForm(false);
+    };
+
+    const handleError = (error) => {
+        console.error('Error creating room:', error);
+    };
+
+    const fetchRooms = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/getRooms');
+            setRooms(response.data.rooms);
+            setShowRooms(true);
+        } catch (error) {
+            console.error('Error fetching rooms:', error);
+        }
+    };
+
     return (
-        // Adjusted gradient background classes for a whitish-blue gradient
-        <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50 shadow-2xl pl-16 pb-8  max-md:pl-5 ">
-          <div className="flex flex-col items-start min-h-screen justify-start pt-10">
-            <div className="text-black text-2xl font-medium leading-5 tracking-[18.11px] uppercase ml-6 mt-6">
-              let’s Make Easy
-            </div>
-            <div className="text-yellow text-9xl font-semibold leading-none tracking-tighter uppercase ml-3.5 mt-4 max-md:text-4xl max-md:leading-loose">
-              Connection
-            </div>
-            <div className="text-gray-700 text-lg font-medium leading-8 tracking-normal ml-3.5 mt-6 max-md:ml-2.5 max-md:mt-4">
-              Simple and sleek design with users in mind.
-            </div>
+        <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50 shadow-2xl pl-16 pb-8 max-md:pl-5">
+            {/* ... other content ... */}
             <div className="ml-6 mt-8 max-md:mt-6">
-              <div className="flex gap-4">
                 <Stack spacing={2} direction="row">
-                  <Button variant="contained">Create Room</Button>
-                  <Button variant="contained">Join Room</Button>
+                    <Button variant="contained" onClick={() => setShowForm(!showForm)}>Create Room</Button>
+                    <Button variant="contained" onClick={fetchRooms}>Join Existing Rooms</Button>
                 </Stack>
-              </div>
+                {showForm && <CreateRoomForm onSuccess={handleSuccess} onError={handleError} />}
+                {showRooms && rooms.map((room, index) => (
+                    <RoomCard key={index} room={room} id={index} />
+                ))}
             </div>
-            {/* Additional content can be added here */}
-          </div>
         </div>
     );
 }
