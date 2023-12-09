@@ -1,0 +1,13 @@
+import express from 'express';
+import Web3 from 'web3';
+import cors from 'cors'; 
+import { exec } from 'child_process';
+import dotenv from 'dotenv';
+import { ethers } from 'ethers';
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json());
+const port = 3001;
+const STAKING_CONTRACT_ADDRESS = "0x5bc4701B7A67f19E47698C804fA9474d18B7B0e5";
+const web3 = new Web3('https://alfajores-forno.celo-testnet.org');
