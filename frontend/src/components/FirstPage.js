@@ -4,10 +4,14 @@ import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import CreateRoomForm from './CreateRoomForm'; // Ensure this path is correct
 import AddMemberForm from './AddMemberForm';
+import MemberList from './MemberList';
+
+
 const FirstPage = () => {
     const [showForm, setShowForm] = useState(false);
     const [showCreateRoomForm, setShowCreateRoomForm] = useState(false);
     const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+    const [showMemberList, setShowMemberList] = useState(false);
  // useHistory called inside the component
  const navigate = useNavigate();
     const handleSuccess = (data) => {
@@ -41,13 +45,14 @@ const FirstPage = () => {
                     <Stack spacing={2} direction="row">
                         <Button variant="contained" onClick={() => setShowForm(!showForm)}>Create Room</Button>
                         <Button variant="contained" onClick={handleJoinRooms}>Join Existing Rooms</Button>
-                        <Button variant="contained" >Member List</Button>
+                        <Button variant="contained" onClick={() => setShowMemberList(!showMemberList)}>Member List</Button>
                         <Button variant="contained" onClick={() => setShowAddMemberForm(!showAddMemberForm)}>Add Member</Button>
 
                     </Stack>
                     {showForm && <CreateRoomForm onSuccess={handleSuccess} onError={handleError} />}
                     {showCreateRoomForm && <CreateRoomForm onSuccess={handleSuccess} onError={handleError} />}
-            {showAddMemberForm && <AddMemberForm onSuccess={handleSuccess} onError={handleError} />}
+                    {showAddMemberForm && <AddMemberForm onSuccess={handleSuccess} onError={handleError} />}
+                    {showMemberList && <MemberList />}
                 </div>
                 {/* Additional content can be added here */}
             </div>
