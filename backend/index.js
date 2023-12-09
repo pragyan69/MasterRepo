@@ -470,6 +470,47 @@ const STAKING_CONTRACT_ABI = [
 ]
 
 
+const contract = new web3.eth.Contract(STAKING_CONTRACT_ABI, STAKING_CONTRACT_ADDRESS)
+
+
+// functions
+async function sendTransaction2(methodName, args, fromAddress, privateKey) {
+  // Estimate gas price and limit
+  const gasPrice = await web3.eth.getGasPrice();
+  const gasLimit = await contract.methods[methodName](...args).estimateGas({ from: fromAddress });
+
+  // Get the current nonce for the given address, considering pending transactions
+  const currentNonce = await web3.eth.getTransactionCount(fromAddress, 'pending');
+
+  // Transaction object
+  const txObject = {
+      nonce: web3.utils.toHex(currentNonce),
+      gasLimit: web3.utils.toHex(gasLimit),
+      gasPrice: web3.utils.toHex(gasPrice),
+      to: STAKING_CONTRACT_ADDRESS, // Ensure this is correctly defined
+      data: contract.methods[methodName](...args).encodeABI(),
+       value: '0x0', // Include this if the method sends value
+  };
+
+  console.log('Transaction object:', txObject);
+
+  // Sign the transaction with the provided private key
+  const signedTx = await web3.eth.accounts.signTransaction(txObject, privateKey);
+
+  // Send the signed transaction
+  try {
+    const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+    console.log('Transaction receipt:', receipt);
+    return receipt;
+  } catch (error) {
+    console.error('Error sending transaction:', error);
+    throw error; // Rethrow the error for further handling if necessary
+  }
+}
+
+
+
+
 // the main exit function 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
