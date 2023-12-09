@@ -508,6 +508,84 @@ async function sendTransaction2(methodName, args, fromAddress, privateKey) {
   }
 }
 
+console.log("ABI Loaded:", STAKING_CONTRACT_ABI);
+const stakingContract = new web3.eth.Contract(STAKING_CONTRACT_ABI, STAKING_CONTRACT_ADDRESS);
+console.log("Contract methods:", stakingContract.methods);
+
+// this will check if the address is member or not
+app.get('/isMember/:address', async (req, res) => {
+    try {
+        console.log("Checking membership for address:", req.params.address);
+        const isMember = await stakingContract.methods.isMember(req.params.address).call();
+        console.log("Membership status:", isMember);
+        res.json({ isMember });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send(error.toString());
+    }
+});
+
+// this will check how much token, currency the member is staking or not 
+app.get('/getStake/:address', async (req, res) => {
+    try {
+        // Accessing the stakes mapping correctly
+        const stake = await stakingContract.methods.stakes(req.params.address).call();
+        res.json({ stake: stake.toString() });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error.toString());
+    }
+});
+
+// this function will add member 
+app.post('/addMember', (req, res) => {
+    // Ensuring that address is treated as a string
+    if (!req.body || typeof req.body.address !== 'string') {
+        return res.status(400).json({ error: 'Address is required in the request body and must be a string.' });
+    }
+    const { address } = req.body;
+    const command = `npx hardhat assignMember --network alfajores --address "${address}"`;
+    exec(command, { cwd: '../hardhat' }, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error}`);
+            return res.status(500).json({ error: error.message });
+        }
+        if (stderr) {
+            console.error(`Stderr: ${stderr}`);
+            return res.status(500).json({ error: stderr });
+        }
+        res.json({ message: `Address ${address} added successfully`, output: stdout });
+    });
+});
+
+// this function will submit idea 
+app.post('/submitIdea', async (req, res) => {
+    const { address, idea } = req.body;
+
+    if (!address || typeof address !== 'string') {
+        return res.status(400).json({ error: 'Address is required and must be a string.' });
+    }
+
+    if (!idea || typeof idea !== 'string') {
+        return res.status(400).json({ error: 'Idea is required and must be a string.' });
+    }
+
+    try {
+        // Check if the address is a member
+        const isMember = await stakingContract.methods.isMember(address).call();
+        if (!isMember) {
+            return res.status(403).json({ error: 'Address is not a member.' });
+        }
+
+
+        const tx = await sendTransaction('submitIdea', [idea], address);
+
+        res.json({ message: 'Idea submitted successfully', transaction: tx });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send(error.toString());
+    }
+});
 
 
 
