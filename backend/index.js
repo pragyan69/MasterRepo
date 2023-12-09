@@ -666,7 +666,41 @@ app.get('/getRoomCount', async (req, res) => {
   });
   
 
+  app.post('/joinRoom', (req, res) => {
+    const { roomId, member } = req.body;
+  
+    // Validate the input
+    if (!roomId || !member) {
+        return res.status(400).json({ error: 'Room ID and member address are required.' });
+    }
+  
+    const command = `npx hardhat joinRoom --address "${member}" --room-id ${roomId} --network alfajores`;
+    
+    exec(command, { cwd: '../hardhat' }, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error}`);
+            return res.status(500).json({ error: error.message });
+        }
+        if (stderr) {
+            console.error(`Stderr: ${stderr}`);
+            return res.status(500).json({ error: stderr });
+        }
+        res.json({ message: `Member ${member} joined room ${roomId} successfully`, output: stdout });
+    });
+  });
 
+  
+  // to get all the members in the network 
+app.get('/getAllMembers', async (req, res) => {
+    try {
+        const members = await stakingContract.methods.getAllMembers().call();
+  
+        res.status(200).json({ members });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+  });
 
 // the main exit function 
 app.listen(port, () => {
