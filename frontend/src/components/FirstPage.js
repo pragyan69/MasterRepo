@@ -39,6 +39,9 @@ const FirstPage = () => {
                     <Stack spacing={2} direction="row">
                         <Button variant="contained" onClick={() => setShowForm(!showForm)}>Create Room</Button>
                         <Button variant="contained" onClick={handleJoinRooms}>Join Existing Rooms</Button>
+                        <Button variant="contained" >Member List</Button>
+                        <Button variant="contained" >Add Member</Button>
+
                     </Stack>
                     {showForm && <CreateRoomForm onSuccess={handleSuccess} onError={handleError} />}
                 </div>

@@ -5,12 +5,15 @@ import RoomsPage from './components/RoomsPage'; // The new component for showing
 
 const App = () => {
   return (
-    <Router>
+
+      <Router>
       <Routes>
         <Route path="/rooms" element={<RoomsPage />} />
         <Route path="/" element={<FirstPage />} />
       </Routes>
     </Router>
+
+    
   );
 };
 

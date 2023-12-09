@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import RoomCard from './RoomCard';
-import { Grid, Button } from '@mui/material';
+import { Grid, Button, Box } from '@mui/material';
 
 const RoomsPage = () => {
     const [rooms, setRooms] = useState([]);
@@ -26,7 +26,15 @@ const RoomsPage = () => {
     };
 
     return (
-        <>
+        <Box
+            sx={{
+                width: '100%',
+                minHeight: '100vh',
+                padding: '20px',
+                background: 'linear-gradient(to bottom right, #E0F7FA, #E0F7FA 50%, #E0F7FA)',
+                boxSizing: 'border-box'
+            }}
+        >
             <Grid container spacing={2}>
                 {rooms.slice(0, visibleRooms).map((room, index) => (
                     <Grid item xs={12} sm={6} md={3} key={index}>
@@ -35,11 +43,13 @@ const RoomsPage = () => {
                 ))}
             </Grid>
             {visibleRooms < rooms.length && (
-                <Button onClick={loadMoreRooms} variant="contained" style={{ margin: '20px 0' }}>
-                    Load More
-                </Button>
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                    <Button onClick={loadMoreRooms} variant="contained">
+                        Load More
+                    </Button>
+                </Box>
             )}
-        </>
+        </Box>
     );
 };
 
