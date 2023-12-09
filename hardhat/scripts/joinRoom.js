@@ -1,10 +1,11 @@
+require('dotenv').config();
 task("joinRoom", "Allows a member to join a room")
     .addParam("address", "The address of the member")
     .addParam("roomId", "The ID of the room to join")
     .setAction(async (taskArgs, hre) => {
         const { address, roomId } = taskArgs;
 
-        const contractAddress = '0x5bc4701B7A67f19E47698C804fA9474d18B7B0e5';
+        const contractAddress = process.env.CONTRACT_ADDRESS;
         const contractABI = [
           {
             "inputs": [

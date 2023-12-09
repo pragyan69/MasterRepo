@@ -1,3 +1,4 @@
+require('dotenv').config();
 task("createRoom", "Creates a room in the contract")
     .addParam("creator", "The address of the member creating the room")
     .addParam("name", "The name of the room")
@@ -7,7 +8,7 @@ task("createRoom", "Creates a room in the contract")
     .setAction(async (taskArgs, { ethers, network }) => {
         const { creator, name, description, memberlimit, validityindays } = taskArgs;
 
-        const contractAddress = '0x5bc4701B7A67f19E47698C804fA9474d18B7B0e5';
+        const contractAddress = process.env.CONTRACT_ADDRESS;
         const contractABI = [
           {
             "inputs": [

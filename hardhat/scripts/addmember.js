@@ -1,8 +1,9 @@
 // scripts/assignMemberTask.js
+require('dotenv').config();
 task("assignMember", "Adds an address as a member")
     .addParam("address", "The address to be added as a member")
     .setAction(async ({ address }, hre) => {
-      const contractAddress = '0x5bc4701B7A67f19E47698C804fA9474d18B7B0e5';
+      const contractAddress = process.env.CONTRACT_ADDRESS;
       const contractABI = [
         {
           "inputs": [
