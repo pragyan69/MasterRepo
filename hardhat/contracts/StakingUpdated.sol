@@ -169,5 +169,37 @@ contract StakingUpdated {
         return rooms[roomId].members;
     }
 
-    
+     // function for the room feature
+    function addRoomFeature(uint256 roomId, string memory featureName, string memory featureDescription) public {
+        require(isMember[msg.sender], "Only members can add features");
+        require(roomId < roomCount, "Invalid room ID");
+
+        Room storage room = rooms[roomId];
+
+        // Check if the sender is a member of the room
+        bool isMemberOfRoom = false;
+        for (uint i = 0; i < room.members.length; i++) {
+            if (room.members[i] == msg.sender) {
+                isMemberOfRoom = true;
+                break;
+            }
+        }
+
+        require(isMemberOfRoom, "Member not part of the room");
+
+        // Add the feature to the room
+        Feature memory newFeature = Feature(featureName, featureDescription);
+        room.features.push(newFeature);
+    }
+
+
+    // functions that return the room features 
+
+     function getRoomFeatures(uint256 roomId) public view returns (Feature[] memory) {
+        require(roomId < roomCount, "Invalid room ID");
+        return rooms[roomId].features;
+    }
+
+
+
 }
