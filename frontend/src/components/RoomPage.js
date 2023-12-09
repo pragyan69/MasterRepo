@@ -18,13 +18,14 @@ const RoomPage = () => {
             .then(response => setMembers(response.data.members))
             .catch(error => console.error(error));
 
-        axios.get(`http://localhost:3001/getRoomIdeas/${roomId}`)
-            .then(response => setIdeas(response.data.ideas))
-            .catch(error => console.error(error));
+            axios.get(`http://localhost:3001/getRoomIdeas/${roomId}`)
+    .then(response => {
+        // The response is an object with a key 'roomIdeas', not an array
+        setIdeas(response.data.roomIdeas); // Access the array with the key 'roomIdeas'
+    })
+    .catch(error => console.error(error));
 
-        axios.get(`http://localhost:3001/getRoomIdeas/${roomId}`)
-            .then(response => setIdeas(response.data.ideas))
-            .catch(error => console.error(error));
+        
     }, [roomId]);
 
     return (

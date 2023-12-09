@@ -3,7 +3,7 @@ require("dotenv").config();
 require("./scripts/addmember");
 require("./scripts/createRoom")
 require("./scripts/joinRoom")
-
+require("./scripts/submitIdea")
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
     solidity: "0.8.16",

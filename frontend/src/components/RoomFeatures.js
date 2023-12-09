@@ -9,7 +9,7 @@ const RoomFeatures = ({ features }) => {
 
     return (
         <List>
-            {ideas.map((features, index) => (
+            {features.map((features, index) => (
                 <ListItem key={index}>
                     <ListItemText primary={features} />
                 </ListItem>
